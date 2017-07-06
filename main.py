@@ -131,9 +131,9 @@ class LabelTool():
 ##            return
         # get image list
         self.imageDir = os.path.join(r'./Images', '%03d' %(self.category))
-        self.imageList = glob.glob(os.path.join(self.imageDir, '*.JPEG'))
+        self.imageList = glob.glob(os.path.join(self.imageDir, '*.jpg'))
         if len(self.imageList) == 0:
-            print 'No .JPEG images found in the specified dir!'
+            print 'No .jpg images found in the specified dir!'
             return
 
         # default to the 1st image in the collection
@@ -149,7 +149,7 @@ class LabelTool():
         self.egDir = os.path.join(r'./Examples', '%03d' %(self.category))
         if not os.path.exists(self.egDir):
             return
-        filelist = glob.glob(os.path.join(self.egDir, '*.JPEG'))
+        filelist = glob.glob(os.path.join(self.egDir, '*.jpg'))
         self.tmp = []
         self.egList = []
         random.shuffle(filelist)
@@ -188,15 +188,28 @@ class LabelTool():
                         bbox_cnt = int(line.strip())
                         continue
                     tmp = [int(t.strip()) for t in line.split()]
+                    #print tmp
 ##                    print tmp
                     self.bboxList.append(tuple(tmp))
-                    tmpId = self.mainPanel.create_rectangle(tmp[0], tmp[1], \
-                                                            tmp[2], tmp[3], \
-                                                            width = 2, \
-                                                            outline = COLORS[(len(self.bboxList)-1) % len(COLORS)])
+                    # else:
+                    #     x1, x2 = min(self.STATE['x'], event.x), max(self.STATE['x'], event.x)
+                    #     y1, y2 = min(self.STATE['y'], event.y), max(self.STATE['y'], event.y)
+
+                    # self.bboxList.append((x1, y1))
+                    x1, y1 = (tmp[0] - 1), (tmp[1] - 1)
+                    x2, y2 = (tmp[0] + 1), (tmp[1] + 1)
+                    tmpId = self.mainPanel.create_oval(x1,y1,x2,y2,fill=COLORS[len(self.bboxList) % len(COLORS)])
                     self.bboxIdList.append(tmpId)
-                    self.listbox.insert(END, '(%d, %d) -> (%d, %d)' %(tmp[0], tmp[1], tmp[2], tmp[3]))
-                    self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
+                    self.listbox.insert(END, '(%d, %d)' %(tmp[0], tmp[1]))
+                    
+
+                    # tmpId = self.mainPanel.create_rectangle(tmp[0], tmp[1], \
+                    #                                         tmp[2], tmp[3], \
+                    #                                         width = 2, \
+                    #                                         outline = COLORS[(len(self.bboxList)-1) % len(COLORS)])
+                    # # self.bboxIdList.append(tmpId)
+                    # self.listbox.insert(END, '(%d, %d) -> (%d, %d)' %(tmp[0], tmp[1], tmp[2], tmp[3]))
+                    # self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
 
     def saveImage(self):
         with open(self.labelfilename, 'w') as f:
@@ -207,17 +220,20 @@ class LabelTool():
 
 
     def mouseClick(self, event):
-        if self.STATE['click'] == 0:
-            self.STATE['x'], self.STATE['y'] = event.x, event.y
-        else:
-            x1, x2 = min(self.STATE['x'], event.x), max(self.STATE['x'], event.x)
-            y1, y2 = min(self.STATE['y'], event.y), max(self.STATE['y'], event.y)
-            self.bboxList.append((x1, y1, x2, y2))
-            self.bboxIdList.append(self.bboxId)
-            self.bboxId = None
-            self.listbox.insert(END, '(%d, %d) -> (%d, %d)' %(x1, y1, x2, y2))
-            self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
-        self.STATE['click'] = 1 - self.STATE['click']
+        #if self.STATE['click'] == 0:
+            # self.STATE['x'], self.STATE['y'] = event.x, event.y
+        x1 = event.x
+        y1 = event.y
+        self.listbox.insert(END, '(%d, %d)' %(x1, y1))
+        # else:
+        #     x1, x2 = min(self.STATE['x'], event.x), max(self.STATE['x'], event.x)
+        #     y1, y2 = min(self.STATE['y'], event.y), max(self.STATE['y'], event.y)
+        self.bboxList.append((x1, y1))
+        self.bboxIdList.append(self.bboxId)
+        self.bboxId = None
+        # self.listbox.insert(END, '(%d, %d)' %(x1, y1))
+        # self.listbox.itemconfig(len(self.bboxIdList) - 1, fg = COLORS[(len(self.bboxIdList) - 1) % len(COLORS)])
+        # self.STATE['click'] = 1 - self.STATE['click']
 
     def mouseMove(self, event):
         self.disp.config(text = 'x: %d, y: %d' %(event.x, event.y))
@@ -228,13 +244,17 @@ class LabelTool():
             if self.vl:
                 self.mainPanel.delete(self.vl)
             self.vl = self.mainPanel.create_line(event.x, 0, event.x, self.tkimg.height(), width = 2)
-        if 1 == self.STATE['click']:
-            if self.bboxId:
-                self.mainPanel.delete(self.bboxId)
-            self.bboxId = self.mainPanel.create_rectangle(self.STATE['x'], self.STATE['y'], \
-                                                            event.x, event.y, \
-                                                            width = 2, \
-                                                            outline = COLORS[len(self.bboxList) % len(COLORS)])
+        # if 1 == self.STATE['click']:
+        if self.bboxId:
+            self.mainPanel.delete(self.bboxId)
+        # python_green = "#476042"
+        x1, y1 = (event.x - 1), (event.y - 1)
+        x2, y2 = (event.x + 1), (event.y + 1)
+        self.bboxId = self.mainPanel.create_oval(x1, y1, x2, y2, fill=COLORS[len(self.bboxList) % len(COLORS)])
+        # self.bboxId = self.mainPanel.create_rectangle(self.STATE['x'], self.STATE['y'], \
+        #                                                     event.x, event.y, \
+        #                                                     width = 2, \
+                                                            # outline = COLORS[len(self.bboxList) % len(COLORS)])
 
     def cancelBBox(self, event):
         if 1 == self.STATE['click']:
