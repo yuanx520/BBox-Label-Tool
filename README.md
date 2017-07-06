@@ -1,10 +1,10 @@
-BBox-Label-Tool
+KeyPoint-Label-Tool
+
+- Fork from puzzledqs/BBox-Label-Tool
+- Modified to Key Point Labeling
 ===============
 
-A simple tool for labeling object bounding boxes in images, implemented with Python Tkinter.
-
-**Updates:**
-- 2017.5.21 Check out the ```multi-class``` branch for a multi-class version implemented by @jxgu1016
+A simple tool for labeling Key Points in images, implemented with Python Tkinter.
 
 **Screenshot:**
 ![Label Tool](./screenshot.png)
