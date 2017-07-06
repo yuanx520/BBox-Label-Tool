@@ -2,9 +2,10 @@ KeyPoint-Label-Tool
 
 - Fork from puzzledqs/BBox-Label-Tool
 - Modified to Key Point Labeling
+
 ===============
 
-A simple tool for labeling Key Points in images, implemented with Python Tkinter.
+A simple tool for **labeling Key Points** in images, implemented with Python Tkinter.
 
 **Screenshot:**
 ![Label Tool](./screenshot.png)
