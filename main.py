@@ -130,7 +130,7 @@ class LabelTool():
 ##            tkMessageBox.showerror("Error!", message = "The specified dir doesn't exist!")
 ##            return
         # get image list
-        self.imageDir = os.path.join(r'./Images', '%03d' %(self.category))
+        self.imageDir = os.path.join(r'./Images', '%d' %(self.category))
         self.imageList = glob.glob(os.path.join(self.imageDir, '*.jpg'))
         if len(self.imageList) == 0:
             print 'No .jpg images found in the specified dir!'
@@ -141,12 +141,12 @@ class LabelTool():
         self.total = len(self.imageList)
 
          # set up output dir
-        self.outDir = os.path.join(r'./Labels', '%03d' %(self.category))
+        self.outDir = os.path.join(r'./Labels', '%d' %(self.category))
         if not os.path.exists(self.outDir):
             os.mkdir(self.outDir)
 
         # load example bboxes
-        self.egDir = os.path.join(r'./Examples', '%03d' %(self.category))
+        self.egDir = os.path.join(r'./Examples', '%d' %(self.category))
         if not os.path.exists(self.egDir):
             return
         filelist = glob.glob(os.path.join(self.egDir, '*.jpg'))
@@ -170,6 +170,8 @@ class LabelTool():
         # load image
         imagepath = self.imageList[self.cur - 1]
         self.img = Image.open(imagepath)
+        self.img = self.img.resize((800, 600))
+        # self.img.show()
         self.tkimg = ImageTk.PhotoImage(self.img)
         self.mainPanel.config(width = max(self.tkimg.width(), 400), height = max(self.tkimg.height(), 400))
         self.mainPanel.create_image(0, 0, image = self.tkimg, anchor=NW)
